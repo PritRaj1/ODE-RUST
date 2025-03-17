@@ -1,4 +1,4 @@
-# PDE-FIND-RUST
+# PDE-RUST
 RUST implementation of PDE stuff.
 
 ## Source
