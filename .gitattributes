@@ -1,0 +1,7 @@
+target/debug filter=lfs diff=lfs merge=lfs -text
+target/debug/deps filter=lfs diff=lfs merge=lfs -text
+target/debug/examples filter=lfs diff=lfs merge=lfs -text
+target/debug/incremental filter=lfs diff=lfs merge=lfs -text
+target/debug/PDE filter=lfs diff=lfs merge=lfs -text
+target/debug/PDE.d filter=lfs diff=lfs merge=lfs -text
+target/debug/build filter=lfs diff=lfs merge=lfs -text

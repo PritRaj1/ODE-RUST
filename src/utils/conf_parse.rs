@@ -1,0 +1,31 @@
+use serde::Deserialize;
+use std::fs;
+use toml;
+
+#[derive(Deserialize, Debug)]
+pub struct Config {
+    pub simulation: Simulation,
+    pub noise: Noise,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Simulation {
+    pub timesteps: usize,
+    pub dt: f64,
+    pub solver: String,
+    pub rtol: f64,
+    pub atol: f64,
+    pub realtime_delay: f64,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Noise {
+    pub enable: bool,
+    pub stddev: f64,
+}
+
+pub fn parse_config(path: &str) -> Result<Config, Box<dyn std::error::Error>> {
+    let contents = fs::read_to_string(path)?;
+    let config: Config = toml::from_str(&contents)?;
+    Ok(config)
+}
