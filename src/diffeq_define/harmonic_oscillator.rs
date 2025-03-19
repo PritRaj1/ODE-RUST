@@ -1,11 +1,20 @@
 use nalgebra::{SVector};
 use ode_solvers::System;
 
-pub struct HarmonicOscillator;
+#[derive(Clone)]
+pub struct HarmonicOscillator{
+    pub omega: f64,
+}
 
-impl System<f64, SVector<f64, 2>> for HarmonicOscillator {
-    fn system(&self, _t: f64, y: &SVector<f64, 2>, dy: &mut SVector<f64, 2>) {
+impl HarmonicOscillator {
+    fn new(omega: f64) -> Self {
+        Self { omega }
+    }
+
+    pub fn dydx(&self, y: &SVector<f64, 4>, dy: &mut SVector<f64, 4>) {
         dy[0] = y[1];
-        dy[1] = -y[0];
+        dy[1] = -self.omega * y[0];
+        dy[2] = 0.0;
+        dy[3] = 0.0;
     }
 }
