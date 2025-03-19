@@ -5,7 +5,6 @@ use toml;
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub simulation: Simulation,
-    pub noise: Noise,
 }
 
 #[derive(Deserialize, Debug)]
@@ -16,12 +15,6 @@ pub struct Simulation {
     pub rtol: f64,
     pub atol: f64,
     pub realtime_delay: f64,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct Noise {
-    pub enable: bool,
-    pub stddev: f64,
 }
 
 pub fn parse_config(path: &str) -> Result<Config, Box<dyn std::error::Error>> {

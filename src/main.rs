@@ -1,10 +1,10 @@
-use crate::DE_evolution::solver::Solver;
-use crate::DE_evolution::state_plot::StatePlot;
+use crate::diffeq_evolve::solver::Solver;
+use crate::diffeq_evolve::state_plot::StatePlot;
 use crate::utils::conf_parse::parse_config;
 use eframe::NativeOptions;
 
-mod DE_evolution;
-mod DiffEqs;
+mod diffeq_evolve;
+mod diffeq_define;
 mod utils;
 
 fn main() {

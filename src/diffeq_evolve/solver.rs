@@ -1,5 +1,5 @@
 use ode_solvers::{Dopri5, Rk4};
-use crate::DiffEqs::harmonic_oscillator::HarmonicOscillator;
+use crate::diffeq_define::harmonic_oscillator::HarmonicOscillator;
 use crate::utils::conf_parse::Simulation;
 use nalgebra::SVector;
 use std::time::{Duration, Instant};

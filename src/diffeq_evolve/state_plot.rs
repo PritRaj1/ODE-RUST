@@ -1,6 +1,6 @@
 use eframe::egui;
 use egui_plot::{Plot, Line, PlotPoints};
-use crate::DE_evolution::solver::Solver;
+use crate::diffeq_evolve::solver::Solver;
 use eframe::App;
 
 pub struct StatePlot {
