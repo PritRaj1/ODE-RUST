@@ -70,7 +70,7 @@ impl<'a> Solver<'a> {
                 SVector::from_vec(vec![1.0, 0.0, 0.0, 0.0])
             },
             SystemType::HodgkinHuxley(_) => {
-                SVector::from_vec(vec![0.0, 0.1, 0.31, 0.6])
+                SVector::from_vec(vec![config.hodgkin_huxley.v0, config.hodgkin_huxley.m0, config.hodgkin_huxley.n0, config.hodgkin_huxley.h0])
             },
         };
 

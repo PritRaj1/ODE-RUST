@@ -63,7 +63,7 @@ impl HodgkinHuxleyNeuron {
             0.0
         };
     
-        dy[0] = -(self.g_na * m.powi(3) * h * (v - self.e_na) + self.g_k * n.powi(4) * (v - self.e_k) + self.g_l * (v - self.e_l) - i_ext);
+        dy[0] = - self.g_na * m.powi(3) * h * (v - self.e_na) - self.g_k * n.powi(4) * (v - self.e_k) - self.g_l * (v - self.e_l) + i_ext;
         dy[1] = alpha_m_v * (1.0 - m) - beta_m_v * m;
         dy[2] = alpha_n_v * (1.0 - n) - beta_n_v * n;
         dy[3] = alpha_h_v * (1.0 - h) - beta_h_v * h;

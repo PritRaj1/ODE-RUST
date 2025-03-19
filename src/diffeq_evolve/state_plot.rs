@@ -16,14 +16,14 @@ impl<'a> eframe::App for StatePlot<'a> {
         egui::CentralPanel::default().show(ctx, |ui| {
             // Time series plot
             egui::Grid::new("plots_grid")
-                .spacing([20.0, 20.0]) // Increased spacing
-                .min_col_width(400.0) // Set minimum column width
+                .spacing([20.0, 20.0]) 
+                .min_col_width(400.0) 
                 .show(ui, |ui| {
                     // First row: Time series plots
                     Plot::new(format!("State {}", self.solver.state_labels[0]))
                         .height(250.0)
                         .width(500.0) 
-                        .x_axis_label("t")
+                        .x_axis_label("t (ms)")
                         .y_axis_label(&self.solver.state_labels[0])
                         .show(ui, |plot_ui| {
                             if !self.solver.trajectory.is_empty() {
@@ -44,8 +44,8 @@ impl<'a> eframe::App for StatePlot<'a> {
                     // Second row: Phase space plots
                     for i in 1..4 {
                         Plot::new(format!("Phase Portrait {}", i))
-                            .height(250.0) // Increased height
-                            .width(500.0) // Fixed width
+                            .height(250.0) 
+                            .width(500.0) 
                             .x_axis_label(&self.solver.state_labels[0])
                             .y_axis_label(&self.solver.state_labels[i])
                             .show(ui, |phase_plot| {
