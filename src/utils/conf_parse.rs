@@ -31,10 +31,12 @@ pub struct HodgkinHuxleySystem {
     pub g_na: f64,
     pub g_k: f64,
     pub g_l: f64,
-    pub c: f64,
-    pub v_na: f64,
-    pub v_k: f64,
-    pub v_l: f64,
+    pub e_na: f64,
+    pub e_k: f64,
+    pub e_l: f64,
+    pub i_ext_amplitude: f64,
+    pub i_ext_start: usize,
+    pub i_ext_end: usize,
 }
 
 pub fn parse_config(path: &str) -> Result<Config, Box<dyn std::error::Error>> {

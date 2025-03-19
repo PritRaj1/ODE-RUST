@@ -13,7 +13,7 @@
 ## 2. Hodgkin-Huxley Neuron
 
 ```math
-\frac{dv}{dt} = \frac{I - g_{Na}m^3h(v - V_{Na}) - g_K n^4(v - V_K) - g_L(v - V_L)}{C}
+\frac{dv}{dt} = \frac{I - g_{Na}m^3h(v - V_{Na}) - g_K n^4(v - e_k) - g_L(v - e_l)}{C}
 ```
 
 ```math

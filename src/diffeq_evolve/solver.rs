@@ -12,10 +12,10 @@ pub enum SystemType {
 }
 
 impl System<f64, SVector<f64, 4>> for SystemType {
-    fn system(&self, _t: f64, y: &SVector<f64, 4>, dy: &mut SVector<f64, 4>) {
+    fn system(&self, t: f64, y: &SVector<f64, 4>, dy: &mut SVector<f64, 4>) {
         match self {
             SystemType::HarmonicOscillator(ho) => ho.dydx(y, dy),
-            SystemType::HodgkinHuxley(hh) => hh.dydx(y, dy),
+            SystemType::HodgkinHuxley(hh) => hh.dydx(y, dy, t),
         }
     }
 }
@@ -45,14 +45,16 @@ impl<'a> Solver<'a> {
                 }
             ),
             "hodgkin_huxley" => SystemType::HodgkinHuxley(
-                HodgkinHuxleyNeuron {
+                HodgkinHuxleyNeuron {   
                     g_na: config.hodgkin_huxley.g_na,
                     g_k: config.hodgkin_huxley.g_k,
                     g_l: config.hodgkin_huxley.g_l,
-                    c: config.hodgkin_huxley.c,
-                    v_na: config.hodgkin_huxley.v_na,
-                    v_k: config.hodgkin_huxley.v_k,
-                    v_l: config.hodgkin_huxley.v_l,
+                    e_na: config.hodgkin_huxley.e_na,
+                    e_k: config.hodgkin_huxley.e_k,
+                    e_l: config.hodgkin_huxley.e_l,
+                    i_ext_amplitude: config.hodgkin_huxley.i_ext_amplitude,
+                    i_ext_start: config.hodgkin_huxley.i_ext_start,
+                    i_ext_end: config.hodgkin_huxley.i_ext_end,
                 }
             ),
             _ => panic!("Unknown system type"),
@@ -65,20 +67,18 @@ impl<'a> Solver<'a> {
         // Set initial conditions based on the system type
         let y0 = match &system {
             SystemType::HarmonicOscillator(_) => {
-                // Initial displacement = 1.0, initial velocity = 0.0
                 SVector::from_vec(vec![1.0, 0.0, 0.0, 0.0])
             },
             SystemType::HodgkinHuxley(_) => {
-                // Initial voltage = -65mV, gates at steady state
-                SVector::from_vec(vec![-65.0, 0.05, 0.32, 0.6])
+                SVector::from_vec(vec![0.0, 0.1, 0.31, 0.6])
             },
         };
 
         let state_labels = match &system {
             SystemType::HarmonicOscillator(_) => 
-                vec!["x".to_string(), "v".to_string(), "unused".to_string(), "unused".to_string()],
+                vec!["x (m)".to_string(), "v (m/s)".to_string(), "unused".to_string(), "unused".to_string()],
             SystemType::HodgkinHuxley(_) => 
-                vec!["V".to_string(), "m".to_string(), "n".to_string(), "h".to_string()],
+                vec!["V (mV/nF)".to_string(), "m (nA)".to_string(), "n (nA)".to_string(), "h (nA)".to_string()],
         };
 
         Self {
@@ -95,38 +95,6 @@ impl<'a> Solver<'a> {
             state_labels,
             realtime_delay: Duration::from_millis(config.simulation.realtime_delay as u64),
             config,
-        }
-    }
-
-    pub fn solve(&mut self) {
-        match self.solver_type.as_str() {
-            "dopri5" => {
-                let mut solver = Dopri5::new(
-                    self.system.clone(),
-                    self.t0, 
-                    self.t_end, 
-                    self.dt, 
-                    self.y0, 
-                    self.rtol, 
-                    self.atol
-                );
-                solver.integrate().unwrap();
-                self.trajectory = solver.y_out().iter().map(|v| v.clone()).collect();
-                self.times = solver.x_out().iter().map(|&t| t).collect();
-            },
-            "runge_kutta_4" => {
-                let mut solver = Rk4::new(
-                    self.system.clone(),
-                    self.t0, 
-                    self.y0, 
-                    self.t_end, 
-                    self.dt
-                );
-                solver.integrate().unwrap();
-                self.trajectory = solver.y_out().iter().map(|v| v.clone()).collect();
-                self.times = solver.x_out().iter().map(|&t| t).collect();
-            },
-            _ => panic!("Unsupported solver"),
         }
     }
 

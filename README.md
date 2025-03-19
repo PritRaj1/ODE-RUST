@@ -1,5 +1,5 @@
-# PDE-RUST
-RUST implementation of PDE stuff.
+# ODE-RUST
+RUST implementation of ODE stuff.
 
 ## Source
 

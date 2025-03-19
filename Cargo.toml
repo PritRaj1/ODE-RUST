@@ -1,5 +1,5 @@
 [package]
-name = "PDE"
+name = "ODE"
 versions = "0.0.1"
 authors = ["PritManGuy"]
 edition = "2021"
@@ -17,5 +17,5 @@ serde = "1.0.219"
 toml = "0.8.20"
 
 [[bin]]
-name = "PDE"
+name = "ODE"
 path = "src/main.rs"
