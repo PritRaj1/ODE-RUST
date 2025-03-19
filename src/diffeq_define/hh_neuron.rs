@@ -1,12 +1,11 @@
 use nalgebra::{SVector};
-use ode_solvers::System;
 
 #[derive(Clone)]
 pub struct HodgkinHuxleyNeuron{
     pub g_na: f64,
     pub g_k: f64,
     pub g_l: f64,
-    pub C: f64,
+    pub c: f64,
     pub v_na: f64,
     pub v_k: f64,
     pub v_l: f64,
@@ -37,8 +36,8 @@ fn beta_n(v: f64) -> f64 {
 }
 
 impl HodgkinHuxleyNeuron {
-    fn new(g_na: f64, g_k: f64, g_l: f64, C: f64) -> Self {
-        Self { g_na, g_k, g_l, C, v_na: 0.0, v_k: 0.0, v_l: 0.0 }
+    fn new(g_na: f64, g_k: f64, g_l: f64, c: f64, v_na: f64, v_k: f64, v_l: f64) -> Self {
+        Self { g_na, g_k, g_l, c, v_na, v_k, v_l }
     }
 
     pub fn dydx(&self, y: &SVector<f64, 4>, dy: &mut SVector<f64, 4>) {
@@ -56,7 +55,7 @@ impl HodgkinHuxleyNeuron {
         let alpha_n_v = alpha_n(v);
         let beta_n_v = beta_n(v);
     
-        dy[0] = (self.g_na * m.powi(3) * h * (v - self.v_na) + self.g_k * n.powi(4) * (v - self.v_k) + self.g_l * (v - self.v_l)) / self.C;
+        dy[0] = (self.g_na * m.powi(3) * h * (v - self.v_na) + self.g_k * n.powi(4) * (v - self.v_k) + self.g_l * (v - self.v_l)) / self.c;
         dy[1] = alpha_m_v * (1.0 - m) - beta_m_v * m;
         dy[2] = alpha_n_v * (1.0 - n) - beta_n_v * n;
         dy[3] = alpha_h_v * (1.0 - h) - beta_h_v * h;

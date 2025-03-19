@@ -1,5 +1,4 @@
 use nalgebra::{SVector};
-use ode_solvers::System;
 
 #[derive(Clone)]
 pub struct HarmonicOscillator{

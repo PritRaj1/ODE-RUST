@@ -20,7 +20,7 @@ impl System<f64, SVector<f64, 4>> for SystemType {
     }
 }
 
-pub struct Solver {
+pub struct Solver<'a> {
     system: SystemType,
     t0: f64,
     pub t_end: f64,
@@ -33,11 +33,11 @@ pub struct Solver {
     pub solver_type: String,
     pub state_labels: Vec<String>,
     pub realtime_delay: Duration,
-    config: Config,
+    config: &'a Config,
 }
 
-impl Solver {
-    pub fn new(config: Config) -> Self {
+impl<'a> Solver<'a> {
+    pub fn new(config: &'a Config) -> Self {
         let system = match config.simulation.diffeq_problem.as_str() {
             "harmonic_oscillator" => SystemType::HarmonicOscillator(
                 HarmonicOscillator {
@@ -49,10 +49,10 @@ impl Solver {
                     g_na: config.hodgkin_huxley.g_na,
                     g_k: config.hodgkin_huxley.g_k,
                     g_l: config.hodgkin_huxley.g_l,
-                    C: config.hodgkin_huxley.C,
-                    v_na: 50.0,
-                    v_k: -77.0,
-                    v_l: -54.4,
+                    c: config.hodgkin_huxley.c,
+                    v_na: config.hodgkin_huxley.v_na,
+                    v_k: config.hodgkin_huxley.v_k,
+                    v_l: config.hodgkin_huxley.v_l,
                 }
             ),
             _ => panic!("Unknown system type"),
@@ -140,7 +140,7 @@ impl Solver {
         }
 
         let last_t = *self.times.last().unwrap();
-        let last_y = self.trajectory.last().unwrap();
+        let last_y = *self.trajectory.last().unwrap();
 
         // Only continue if we haven't reached t_end
         if last_t < self.t_end {
@@ -153,7 +153,7 @@ impl Solver {
                         last_t,
                         next_t,
                         self.dt,
-                        *last_y,
+                        last_y,
                         self.rtol,
                         self.atol
                     );
@@ -167,7 +167,7 @@ impl Solver {
                     let mut solver = Rk4::new(
                         self.system.clone(),
                         last_t,
-                        *last_y,
+                        last_y,
                         next_t,
                         self.dt
                     );

@@ -1,78 +1,129 @@
 use eframe::egui;
-use egui_plot::{Plot, Line, PlotPoints};
-use crate::diffeq_evolve::solver::Solver;
-use eframe::App;
+use egui_plot::{Plot, Line};
 
-pub struct StatePlot {
-    solver: Solver,
+pub struct StatePlot<'a> {
+    solver: &'a mut super::solver::Solver<'a>,
 }
 
-impl StatePlot {
-    pub fn new(solver: Solver) -> Self {
+impl<'a> StatePlot<'a> {
+    pub fn new(solver: &'a mut super::solver::Solver<'a>) -> Self {
         Self { solver }
     }
 }
 
-impl eframe::App for StatePlot {
+impl<'a> eframe::App for StatePlot<'a> {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            let plot = Plot::new("time_series")
-                .view_aspect(3.0)
-                .show_axes(true)
-                .x_axis_label("Time, t")
-                .y_axis_label("State Values");
-            
-            // Trajectories as time series
-            plot.show(ui, |plot_ui| {
+            // Time series plot
+            egui::Grid::new("plots_grid")
+                .spacing([20.0, 20.0]) // Increased spacing
+                .min_col_width(400.0) // Set minimum column width
+                .show(ui, |ui| {
+                    // First row: Time series plots
+                    for i in 0..2 {
+                        Plot::new(format!("State {}", self.solver.state_labels[i]))
+                            .height(250.0) // Increased height
+                            .width(500.0) // Fixed width
+                            .x_axis_label("t")
+                            .y_axis_label(&self.solver.state_labels[i])
+                            .show(ui, |plot_ui| {
+                                if !self.solver.trajectory.is_empty() {
+                                    let points: Vec<[f64; 2]> = self.solver.trajectory.iter()
+                                        .zip(self.solver.times.iter())
+                                        .map(|(y, &t)| [t, y[i]])
+                                        .collect();
 
-                if !self.solver.trajectory.is_empty() {
-                    let pos_points: Vec<[f64; 2]> = self.solver.trajectory.iter()
-                        .enumerate()
-                        .map(|(i, point)| [i as f64 * self.solver.dt, point[0]])
-                        .collect();
-                    
-                    plot_ui.line(Line::new(pos_points)
-                        .name("Position"));
-                }
+                                    let line = Line::new(points)
+                                        .name(&self.solver.state_labels[i])
+                                        .color(match i {
+                                            0 => egui::Color32::RED,
+                                            1 => egui::Color32::GREEN,
+                                            _ => egui::Color32::WHITE,
+                                        });
 
-                if !self.solver.trajectory.is_empty() {
-                    let vel_points: Vec<[f64; 2]> = self.solver.trajectory.iter()
-                        .enumerate()
-                        .map(|(i, point)| [i as f64 * self.solver.dt, point[1]])
-                        .collect();
-                    
-                    plot_ui.line(Line::new(vel_points)
-                        .name("Velocity"));
-                }
-            });
+                                    plot_ui.line(line);
+                                }
+                            });
+                    }
+                    ui.end_row();
 
-            // Phase portrait; state 2 vs state 1
-            let phase_plot = Plot::new("phase_plot")
-                .view_aspect(1.0)
-                .show_axes(true)
-                .x_axis_label("Position, x")
-                .y_axis_label("Velocity, dx/dt")
-                .auto_bounds_x()
-                .auto_bounds_y();
+                    // Second row: Time series plots
+                    for i in 2..4 {
+                        Plot::new(format!("State {}", self.solver.state_labels[i]))
+                            .height(250.0) // Increased height
+                            .width(500.0) // Fixed width
+                            .x_axis_label("t")
+                            .y_axis_label(&self.solver.state_labels[i])
+                            .show(ui, |plot_ui| {
+                                if !self.solver.trajectory.is_empty() {
+                                    let points: Vec<[f64; 2]> = self.solver.trajectory.iter()
+                                        .zip(self.solver.times.iter())
+                                        .map(|(y, &t)| [t, y[i]])
+                                        .collect();
 
-            phase_plot.show(ui, |plot_ui| {
+                                    let line = Line::new(points)
+                                        .name(&self.solver.state_labels[i])
+                                        .color(match i {
+                                            2 => egui::Color32::BLUE,
+                                            3 => egui::Color32::YELLOW,
+                                            _ => egui::Color32::WHITE,
+                                        });
 
-                if !self.solver.trajectory.is_empty() {
-                    let phase_points: Vec<[f64; 2]> = self.solver.trajectory.iter()
-                        .map(|point| [point[0], point[1]])
-                        .collect();
-                    
-                    plot_ui.line(Line::new(phase_points)
-                        .name("Phase Portrait")
-                        .color(egui::Color32::YELLOW));
-                }
-            });
+                                    plot_ui.line(line);
+                                }
+                            });
+                    }
+                    ui.end_row();
 
-            // Take a simulation step
-            if self.solver.trajectory.len() as f64 * self.solver.dt < self.solver.t_end {
-                self.solver.step();
-                ctx.request_repaint();
-            }
+                    // Third row: Phase space plots
+                    for i in 1..3 {
+                        Plot::new(format!("Phase Portrait {}", i))
+                            .height(250.0) // Increased height
+                            .width(500.0) // Fixed width
+                            .x_axis_label(&self.solver.state_labels[0])
+                            .y_axis_label(&self.solver.state_labels[i])
+                            .show(ui, |phase_plot| {
+                                if !self.solver.trajectory.is_empty() {
+                                    let phase_points: Vec<[f64; 2]> = self.solver.trajectory.iter()
+                                        .map(|y| [y[0], y[i]])
+                                        .collect();
+
+                                    let line = Line::new(phase_points)
+                                        .color(match i {
+                                            1 => egui::Color32::GREEN,
+                                            2 => egui::Color32::BLUE,
+                                            _ => egui::Color32::WHITE,
+                                        });
+
+                                    phase_plot.line(line);
+                                }
+                            });
+                    }
+                    ui.end_row();
+
+                    // Fourth row: Last phase space plot
+                    Plot::new(format!("Phase Portrait {}", 3))
+                        .height(250.0) // Increased height
+                        .width(500.0) // Fixed width
+                        .x_axis_label(&self.solver.state_labels[0])
+                        .y_axis_label(&self.solver.state_labels[3])
+                        .show(ui, |phase_plot| {
+                            if !self.solver.trajectory.is_empty() {
+                                let phase_points: Vec<[f64; 2]> = self.solver.trajectory.iter()
+                                    .map(|y| [y[0], y[3]])
+                                    .collect();
+
+                                let line = Line::new(phase_points)
+                                    .color(egui::Color32::YELLOW);
+
+                                phase_plot.line(line);
+                            }
+                        });
+                });
+
+            // Take a simulation step and request repaint
+            self.solver.step();
+            ctx.request_repaint();
         });
     }
 }
