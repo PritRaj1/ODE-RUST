@@ -7,6 +7,7 @@ pub struct Config {
     pub simulation: Simulation,
     pub harmonic_oscillator: HarmonicOscillatorSystem,
     pub hodgkin_huxley: HodgkinHuxleySystem,
+    pub lorenz_attractor: LorenzAttractorSystem,
 }
 
 #[derive(Deserialize, Debug)]
@@ -41,6 +42,16 @@ pub struct HodgkinHuxleySystem {
     pub m0: f64,
     pub n0: f64,
     pub h0: f64,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct LorenzAttractorSystem {
+    pub sigma: f64,
+    pub rho: f64,
+    pub beta: f64,
+    pub x0: f64,
+    pub y0: f64,
+    pub z0: f64,
 }
 
 pub fn parse_config(path: &str) -> Result<Config, Box<dyn std::error::Error>> {

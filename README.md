@@ -15,7 +15,7 @@ cargo run
 
 GUI will look like this:
 
-![GUI Example](src/utils/image.png)
+![GUI Example](src/utils/lorenz.png)
 
 ## Configuration
 

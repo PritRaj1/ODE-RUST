@@ -27,3 +27,18 @@
 ```math
 \frac{dh}{dt} = \alpha_h(v)(1 - h) - \beta_h(v)h
 ```
+
+## 3. Lorenz Attractor
+
+```math
+\frac{dx}{dt} = \sigma(y - x)
+```
+
+```math
+\frac{dy}{dt} = x(\rho - z) - y
+```
+
+```math
+\frac{dz}{dt} = xy - \beta z
+```
+

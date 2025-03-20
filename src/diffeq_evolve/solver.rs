@@ -3,12 +3,14 @@ use nalgebra::SVector;
 use crate::utils::conf_parse::Config;
 use crate::diffeq_define::harmonic_oscillator::HarmonicOscillator;
 use crate::diffeq_define::hh_neuron::HodgkinHuxleyNeuron;
+use crate::diffeq_define::lorenz_attractor::LorenzAttractor;
 use std::time::{Duration, Instant};
 
 #[derive(Clone)]
 pub enum SystemType {
     HarmonicOscillator(HarmonicOscillator),
     HodgkinHuxley(HodgkinHuxleyNeuron),
+    LorenzAttractor(LorenzAttractor),
 }
 
 impl System<f64, SVector<f64, 4>> for SystemType {
@@ -16,6 +18,7 @@ impl System<f64, SVector<f64, 4>> for SystemType {
         match self {
             SystemType::HarmonicOscillator(ho) => ho.dydx(y, dy),
             SystemType::HodgkinHuxley(hh) => hh.dydx(y, dy, t),
+            SystemType::LorenzAttractor(la) => la.dydx(y, dy),
         }
     }
 }
@@ -57,6 +60,13 @@ impl<'a> Solver<'a> {
                     i_ext_end: config.hodgkin_huxley.i_ext_end,
                 }
             ),
+            "lorenz_attractor" => SystemType::LorenzAttractor(
+                LorenzAttractor {
+                    sigma: config.lorenz_attractor.sigma,
+                    rho: config.lorenz_attractor.rho,
+                    beta: config.lorenz_attractor.beta,
+                }
+            ),
             _ => panic!("Unknown system type"),
         };
 
@@ -72,6 +82,9 @@ impl<'a> Solver<'a> {
             SystemType::HodgkinHuxley(_) => {
                 SVector::from_vec(vec![config.hodgkin_huxley.v0, config.hodgkin_huxley.m0, config.hodgkin_huxley.n0, config.hodgkin_huxley.h0])
             },
+            SystemType::LorenzAttractor(_) => {
+                SVector::from_vec(vec![config.lorenz_attractor.x0, config.lorenz_attractor.y0, config.lorenz_attractor.z0, 0.0])
+            },
         };
 
         let state_labels = match &system {
@@ -79,6 +92,8 @@ impl<'a> Solver<'a> {
                 vec!["x (m)".to_string(), "v (m/s)".to_string(), "unused".to_string(), "unused".to_string()],
             SystemType::HodgkinHuxley(_) => 
                 vec!["V (mV/nF)".to_string(), "m (nA)".to_string(), "n (nA)".to_string(), "h (nA)".to_string()],
+            SystemType::LorenzAttractor(_) =>
+                vec!["x".to_string(), "y".to_string(), "z".to_string(), "unused".to_string()],
         };
 
         Self {
