@@ -1,18 +1,23 @@
 # ODE-RUST
-RUST implementation of ODE stuff.
+RUST implementation of realtime ODE visualizations.
 
-## Source
+## To run
 
-- [Data-driven discovery of partial differential equations](https://arxiv.org/abs/1609.06401)
-
-```bibtex
-@misc{rudy2016datadrivendiscoverypartialdifferential,
-      title={Data-driven discovery of partial differential equations}, 
-      author={Samuel H. Rudy and Steven L. Brunton and Joshua L. Proctor and J. Nathan Kutz},
-      year={2016},
-      eprint={1609.06401},
-      archivePrefix={arXiv},
-      primaryClass={nlin.PS},
-      url={https://arxiv.org/abs/1609.06401}, 
-}
+```bash
+cargo run 
 ```
+
+## Plots:
+
+- Time series plots of first state
+- Phase portraits of hidden states
+- Poincare plots of all states
+
+GUI will look like this:
+
+![GUI Example](src/utils/image.png)
+
+## Configuration
+
+Configuration is done in `config.ini`.
+

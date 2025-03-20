@@ -1,6 +1,6 @@
 # Differential Equations
 
-## 1. Harmonic Oscillator
+## 1. Harmonic Oscillator (or small-angle pendulum)
 
 ```math
 \frac{dx}{dt} = v
